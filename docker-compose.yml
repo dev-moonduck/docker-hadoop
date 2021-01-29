@@ -14,7 +14,7 @@ services:
     env_file:
       - ./hadoop.env
     networks:
-      - hadoop_network
+      - hadoop.net
 
   datanode1:
     image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
@@ -29,7 +29,7 @@ services:
     ports:
       - "9864:9864"
     networks:
-      - hadoop_network
+      - hadoop.net
 
   datanode2:
     image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
@@ -42,7 +42,7 @@ services:
     env_file:
       - ./hadoop.env
     networks:
-      - hadoop_network
+      - hadoop.net
   
   datanode3:
     image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
@@ -55,7 +55,7 @@ services:
     env_file:
       - ./hadoop.env
     networks:
-      - hadoop_network
+      - hadoop.net
   
   resourcemanager:
     image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
@@ -68,7 +68,7 @@ services:
     ports:
       - "8088:8088"
     networks:
-      - hadoop_network
+      - hadoop.net
 
   nodemanager1:
     image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
@@ -81,7 +81,7 @@ services:
     ports:
       - "8042:8042"
     networks:
-      - hadoop_network
+      - hadoop.net
   
   historyserver:
     image: bde2020/hadoop-historyserver:2.0.0-hadoop3.2.1-java8
@@ -96,31 +96,55 @@ services:
     ports:
       - "8188:8188"
     networks:
-      - hadoop_network
+      - hadoop.net
       
   hive-server:
     image: docker-hive:latest
+    container_name: hive-server
+    env_file:
+      - ./hive/hadoop-hive.env
+    environment:
+      SERVICE_PRECONDITION: "hive-metastore:9083 hive-metastore-db:5432 namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864"
+    ports:
+      - "10000:10000"
+    networks:
+      - hadoop.net
+  
+  hive-metastore:
+    image: docker-hive:latest
+    container_name: hive-metastore
     env_file:
       - ./hive/hadoop-hive.env
     environment:
       SERVICE_PRECONDITION: "hive-metastore-db:5432 namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864"
+    command: /opt/hive/bin/hive --service metastore
     ports:
-      - "10000:10000"
+      - "9083:9083"
     networks:
-      - hadoop_network
+      - hadoop.net
 
   hive-metastore-db:
     image: postgres:13.1
+    container_name: hive-metastore-db
     environment:
       POSTGRES_PASSWORD: "postgres"
       POSTGRES_HOST_AUTH_METHOD: "trust"
     networks:
-      - hadoop_network
+      - hadoop.net
     ports:
       - "5432:5432"
     volumes:
       - ./hive/sql/:/docker-entrypoint-initdb.d/
-    
+  
+  hue:
+    image: docker-hue
+    container_name: hue
+    environment:
+      SERVICE_PRECONDITION: "hive-metastore-db:5432 hive-server:10000 namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864"
+    networks:
+      - hadoop.net
+    ports:
+      - "8888:8888"
   # presto-coordinator:
   #   image: shawnzhu/prestodb:0.181
   #   ports:
@@ -134,5 +158,5 @@ volumes:
   hadoop_historyserver:
 
 networks:
-  hadoop_network:
+  hadoop.net:
     external: true

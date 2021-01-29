@@ -116,6 +116,6 @@ do
     wait_for_it ${i}
 done
 
-/opt/hive/bin/hive --service metastore &
+#/opt/hive/bin/hive --service metastore &
 /opt/hive/bin/schematool -dbType postgres -initSchema
 exec $@
