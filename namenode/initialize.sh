@@ -1,5 +1,6 @@
 #!/bin/bash
 
+sleep 3s
 SAFE_MODE_STATUS=`hdfs dfsadmin -safemode get`
 if [ "$SAFE_MODE_STATUS" = "Safe mode is ON" ]; then
     echo "Leaving safemode"
@@ -8,7 +9,7 @@ fi
 
 # create users in hdfs
 # prefix HADOOP_USER_NAME_ will be added in hdfs
-local hadoop_username_prefix="HADOOP_USER_NAME_"
+hadoop_username_prefix="HADOOP_USER_NAME_"
 for user in `printenv | grep $hadoop_username_prefix | sed -r "s/^$hadoop_username_prefix.*?=(.+)$/\1/"`; do
     # split by comma to check if it's proxy user
     user_path_in_hdfs="/user/$user"

@@ -9,10 +9,11 @@ RUN mkdir -p /hadoop/dfs/name
 VOLUME /hadoop/dfs/name
 
 ADD run.sh /run.sh
+
+ADD initialize.sh /postrun/
+
 RUN chmod a+x /run.sh
 
 EXPOSE 9870
 
 CMD ["/run.sh"]
-
-ADD initialize.sh /postrun/

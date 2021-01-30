@@ -75,7 +75,7 @@ function handleUserOptions() {
 PRERUN_PATH=/prerun
 POSTRUN_PATH=/postrun
 
-for script in `ls $PRERUN_PATH`; do
+for script in `ls $PRERUN_PATH/*`; do
     echo "Running $script before entrypoint"
     /bin/bash $script
 done
@@ -165,7 +165,7 @@ do
     wait_for_it ${i}
 done
 
-for script in `ls $POSTRUN_PATH`; do
+for script in `ls $POSTRUN_PATH/*`; do
     echo "Running $script after entrypoint"
     /bin/bash $script
 done
