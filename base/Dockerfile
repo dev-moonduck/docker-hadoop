@@ -66,81 +66,108 @@ ARG CLUSTER_ADMIN_UID=310
 RUN useradd --uid $CLUSTER_ADMIN_UID --no-log-init --gid 0 --shell /bin/bash -p $CLUSTER_ADMIN_PASSWORD $CLUSTER_ADMIN_USER
 
 # Normal hadoop user / no proxy user / limited privilege in hdfs
-ARG DEV_USER=dev-user
-ARG DEV_USER_PASSWORD=dev-user
+# FYI dash(-) is NOT allowed in user name
+ARG DEV_USER=dev_user
+ARG DEV_USER_PASSWORD=dev_user
 ARG DEV_USER_UID=401
+ARG DEV_USER_GROUP=$HADOOP_USER_GROUP
 ## Prefix HADOOP_USER will be added in hdfs user list
 ENV HADOOP_USER_NAME_DEV_USER=$DEV_USER
-ENV HADOOP_USER_GROUP_DEV=$HADOOP_USER_GROUP
-RUN useradd --uid $DEV_USER_UID --no-log-init --groups $HADOOP_USER_GROUP_DEV --shell /usr/sbin/nologin --no-create-home --system -p $DEV_USER_PASSWORD $DEV_USER
+RUN useradd --uid $DEV_USER_UID --no-log-init --groups $DEV_USER_GROUP --shell /usr/sbin/nologin --no-create-home --system -p $DEV_USER_PASSWORD $DEV_USER
 
 # Normal hadoop user / no proxy user / limited privilege in hdfs
-ARG BI_USER=bi-user
-ARG BI_USER_PASSWORD=bi-user
+ARG BI_USER=bi_user
+ARG BI_USER_PASSWORD=bi_user
 ARG BI_USER_UID=402
+ARG BI_USER_GROUP=$HADOOP_USER_GROUP
 ## Prefix HADOOP_USER will be added in hdfs user list
 ENV HADOOP_USER_NAME_BI_USER=$BI_USER
-ENV HADOOP_USER_GROUP_BI_USER=$HADOOP_USER_GROUP
-RUN useradd --uid $BI_USER_UID --no-log-init --groups $HADOOP_USER_GROUP_BI_USER --shell /usr/sbin/nologin --no-create-home --system -p $BI_USER_PASSWORD $BI_USER
+RUN useradd --uid $BI_USER_UID --no-log-init --groups $BI_USER_GROUP --shell /usr/sbin/nologin --no-create-home --system -p $BI_USER_PASSWORD $BI_USER
 
 # Normal hadoop user / no proxy user / limited privilege in hdfs
-ARG ML_USER=ml-user
-ARG ML_USER_PASSWORD=ml-user
+ARG ML_USER=ml_user
+ARG ML_USER_PASSWORD=ml_user
 ARG ML_USER_UID=403
+ARG ML_USER_GROUP=$HADOOP_USER_GROUP
 ## Prefix HADOOP_USER will be added in hdfs user list
-ENV HADOOP_USER_NAME_ML_USER=$ML_USER
-ENV HADOOP_USER_GROUP_ML_USER=$HADOOP_USER_GROUP
-RUN useradd --uid $ML_USER_UID --no-log-init --groups $HADOOP_USER_GROUP_ML_USER --shell /usr/sbin/nologin --no-create-home --system -p $ML_USER_PASSWORD $ML_USER
+ENV HADOOP_USER_NAME_$ML_USER=$ML_USER
+RUN useradd --uid $ML_USER_UID --no-log-init --groups $ML_USER_GROUP --shell /usr/sbin/nologin --no-create-home --system -p $ML_USER_PASSWORD $ML_USER
 
 # hdfs super user / no login
+ARG HDFS_USER=hdfs
 ARG HDFS_UID=320
-ENV HADOOP_USER_NAME_HDFS=hdfs
-ENV HADOOP_USER_GROUP_HDFS=$HADOOP_ADMIN_GROUP
-RUN useradd --uid $HDFS_UID --no-log-init --groups $HADOOP_USER_GROUP_HDFS --shell /usr/sbin/nologin --no-create-home --system hdfs
+ARG HDFS_USER_PASSWORD=hdfs
+ARG HDFS_GROUP=$HADOOP_ADMIN_GROUP
+ENV HADOOP_USER_NAME_$HDFS_USER=$HDFS_USER
+RUN useradd --uid $HDFS_UID --no-log-init --groups $HDFS_GROUP --shell /usr/sbin/nologin --no-create-home --system -p $HDFS_USER_PASSWORD $HDFS_USER
+
+# webhdfs super user / no login
+ARG WEBHDFS_USER=webhdfs
+ARG WEBHDFS_UID=321
+ARG WEBHDFS_USER_PASSWORD=webhdfs
+ARG WEBHDFS_GROUP=$HADOOP_ADMIN_GROUP
+ENV HADOOP_USER_NAME_$WEBHDFS_USER=$WEBHDFS_USER
+RUN useradd --uid $WEBHDFS_UID --no-log-init --groups $WEBHDFS_GROUP --shell /usr/sbin/nologin --no-create-home --system -p $WEBHDFS_USER_PASSWORD $WEBHDFS_USER
 
 # hadoop service user / proxy user
 ARG HIVE_USER=hive
-ARG HIVE_UID=340
-ENV HADOOP_USER_NAME_HIVE=$HIVE_USER
-ENV HADOOP_USER_GROUP_HIVE=$HADOOP_SVC_GROUP
-RUN useradd --uid $HIVE_UID --no-log-init --groups $HADOOP_USER_GROUP_HIVE --shell /usr/sbin/nologin --no-create-home --system $HIVE_USER
+ARG HIVE_UID=330
+ARG HIVE_USER_PASSWORD=hive
+ARG HIVE_GROUP=$HADOOP_SVC_GROUP
+ENV HADOOP_USER_NAME_$HIVE_USER=$HIVE_USER
+# proxy.hosts/groups are * by default. but explicitly set it as * is not allowed because * and @ is special meaning in bash
+# TODO: Make it work with *(asterisk) as value
+ENV HADOOP_USER_OPT_$HIVE_USER="proxy.user=true"
+RUN useradd --uid $HIVE_UID --no-log-init --groups $HIVE_GROUP --shell /usr/sbin/nologin --no-create-home --system -p $HIVE_USER_PASSWORD $HIVE_USER
 
 ARG PRESTO_USER=presto
-ARG PRESTO_UID=350
+ARG PRESTO_UID=340
+ARG PRESTO_USER_PASSWORD=presto
+ARG PRESTO_GROUP=$HADOOP_SVC_GROUP
 ENV HADOOP_USER_NAME_PRESTO=$PRESTO_USER
-ENV HADOOP_USER_GROUP_PRESTO=$HADOOP_SVC_GROUP
-RUN useradd --uid $PRESTO_UID --no-log-init --groups $HADOOP_USER_GROUP_PRESTO --shell /usr/sbin/nologin --no-create-home --system $PRESTO_USER
+ENV HADOOP_USER_OPT_$PRESTO_USER="proxy.user=true"
+RUN useradd --uid $PRESTO_UID --no-log-init --groups $PRESTO_GROUP --shell /usr/sbin/nologin --no-create-home --system -p $PRESTO_USER_PASSWORD $PRESTO_USER
 
 ARG KAFKA_USER=kafka
-ARG KAFKA_UID=360
-ENV HADOOP_USER_NAME_KAFKA=$KAFKA_USER
-ENV HADOOP_USER_GROUP_KAFKA=$HADOOP_SVC_GROUP
-RUN useradd --uid $KAFKA_UID --no-log-init --groups $HADOOP_USER_GROUP_KAFKA --shell /usr/sbin/nologin --no-create-home --system $KAFKA_USER
+ARG KAFKA_UID=350
+ARG KAFKA_USER_PASSWORD=kafka
+ARG KAFKA_GROUP=$HADOOP_SVC_GROUP
+ENV HADOOP_USER_NAME_$KAFKA_USER=$KAFKA_USER
+ENV HADOOP_USER_OPT_$KAFKA_USER="proxy.user=true"
+RUN useradd --uid $KAFKA_UID --no-log-init --groups $KAFKA_GROUP --shell /usr/sbin/nologin --no-create-home --system -p $KAFKA_USER_PASSWORD $KAFKA_USER
 
 ARG HUE_USER=hue
-ARG HUE_UID=370
-ENV HADOOP_USER_NAME_HUE=$HUE_USER
-ENV HADOOP_USER_GROUP_HUE=$HADOOP_SVC_GROUP
-RUN useradd --uid $HUE_UID --no-log-init --groups $HADOOP_USER_GROUP_HUE --shell /usr/sbin/nologin --no-create-home --system $HUE_USER
+ARG HUE_UID=360
+ARG HUE_USER_PASSWORD=hue
+ARG HUE_GROUP=$HADOOP_SVC_GROUP
+ENV HADOOP_USER_NAME_$HUE_USER=$HUE_USER
+ENV HADOOP_USER_OPT_$HUE_USER="proxy.user=true"
+RUN useradd --uid $HUE_UID --no-log-init --groups $HUE_GROUP --shell /usr/sbin/nologin --no-create-home --system -p $HUE_USER_PASSWORD $HUE_USER
 
 ARG AIRFLOW_USER=airflow
-ARG AIRFLOW_UID=380
-ENV HADOOP_USER_NAME_AIRFLOW=$AIRFLOW_USER
-ENV HADOOP_USER_GROUP_AIRFLOW=$HADOOP_SVC_GROUP
-RUN useradd --uid $AIRFLOW_UID --no-log-init --groups $HADOOP_USER_GROUP_AIRFLOW --shell /usr/sbin/nologin --no-create-home --system $AIRFLOW_USER
+ARG AIRFLOW_UID=370
+ARG AIRFLOW_USER_PASSWORD=airflow
+ARG AIRFLOW_GROUP=$HADOOP_SVC_GROUP
+ENV HADOOP_USER_NAME_$AIRFLOW_USER=$AIRFLOW_USER
+ENV HADOOP_USER_OPT_$AIRFLOW_USER="proxy.user=true"
+RUN useradd --uid $AIRFLOW_UID --no-log-init --groups $AIRFLOW_GROUP --shell /usr/sbin/nologin --no-create-home --system -p $AIRFLOW_USER_PASSWORD $AIRFLOW_USER
 
 ARG SPARK_USER=spark
-ARG SPARK_UID=390
-ENV HADOOP_USER_NAME_SPARK=$SPARK_USER
-ENV HADOOP_USER_GROUP_SPARK=$HADOOP_SVC_GROUP
-RUN useradd --uid $SPARK_UID --no-log-init --groups $HADOOP_USER_GROUP_SPARK --shell /usr/sbin/nologin --no-create-home --system $SPARK_USER
+ARG SPARK_UID=380
+ARG SPARK_USER_PASSWORD=spark
+ARG SPARK_GROUP=$HADOOP_SVC_GROUP
+ENV HADOOP_USER_NAME_$SPARK_USER=$SPARK_USER
+ENV HADOOP_USER_OPT_$SPARK_USER="proxy.user=true"
+RUN useradd --uid $SPARK_UID --no-log-init --groups $SPARK_GROUP --shell /usr/sbin/nologin --no-create-home --system -p $SPARK_USER_PASSWORD $SPARK_USER
 
 # user service user / proxy user
 ARG SVC_USER=svc
-ARG SVC_UID=330
-ENV HADOOP_USER_NAME_SVC=$SVC_USER
-ENV HADOOP_USER_GROUP_SVC=$HADOOP_USER_SVC_GROUP
-RUN useradd --uid $SVC_UID --no-log-init --groups $HADOOP_USER_GROUP_SVC --shell /usr/sbin/nologin --no-create-home --system $SVC_USER
+ARG SVC_UID=500
+ARG SVC_USER_PASSWORD=svc
+ARG SVC_GROUP=$HADOOP_USER_SVC_GROUP
+ENV HADOOP_USER_NAME_$SVC_USER=$SVC_USER
+ENV HADOOP_USER_OPT_$SVC_USER="proxy.user=true"
+RUN useradd --uid $SVC_UID --no-log-init --groups $SVC_GROUP --shell /usr/sbin/nologin --no-create-home -p $SVC_PASSWORD --system $SVC_USER
 
 # Scripts to run before/after entrypoint
 RUN mkdir -p /prerun && mkdir -p /postrun
