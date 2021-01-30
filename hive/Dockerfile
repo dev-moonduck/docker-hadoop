@@ -2,6 +2,8 @@ FROM docker-hadoop-base:1.0.0
 
 MAINTAINER Mun Duk Hyun <dev.moonduck@gmail.com>
 
+USER root
+
 # Allow buildtime config of HIVE_VERSION
 ARG HIVE_VERSION
 # Set HIVE_VERSION from arg if provided at build, env if provided at run, or default
@@ -42,8 +44,10 @@ ADD conf/llap-daemon-log4j2.properties $HIVE_HOME/conf
 COPY startup.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/startup.sh
 
-COPY entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY create_schema.sh /postrun/
+COPY hive_config.sh /config/
+
+RUN chmod +x /postrun/create_schema.sh && chmod +x /config/hive_config.sh
 
 EXPOSE 10000
 EXPOSE 10002
@@ -52,5 +56,4 @@ EXPOSE 10002
 COPY ./jars/guava-27.0-jre.jar $HIVE_HOME/lib/
 RUN rm -f $HIVE_HOME/lib/guava-19.0.jar
 
-ENTRYPOINT ["entrypoint.sh"]
 CMD startup.sh

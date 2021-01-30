@@ -118,7 +118,7 @@ ENV HADOOP_USER_NAME_$HIVE_USER=$HIVE_USER
 # proxy.hosts/groups are * by default. but explicitly set it as * is not allowed because * and @ is special meaning in bash
 # TODO: Make it work with *(asterisk) as value
 ENV HADOOP_USER_OPT_$HIVE_USER="proxy.user=true"
-RUN useradd --uid $HIVE_UID --no-log-init --groups $HIVE_GROUP --shell /usr/sbin/nologin --no-create-home --system -p $HIVE_USER_PASSWORD $HIVE_USER
+RUN useradd --uid $HIVE_UID --no-log-init --groups $HIVE_GROUP --shell /bin/false --no-create-home --system -p $HIVE_USER_PASSWORD $HIVE_USER
 
 ARG PRESTO_USER=presto
 ARG PRESTO_UID=340
@@ -169,8 +169,10 @@ ENV HADOOP_USER_NAME_$SVC_USER=$SVC_USER
 ENV HADOOP_USER_OPT_$SVC_USER="proxy.user=true"
 RUN useradd --uid $SVC_UID --no-log-init --groups $SVC_GROUP --shell /usr/sbin/nologin --no-create-home -p $SVC_PASSWORD --system $SVC_USER
 
-# Scripts to run before/after entrypoint
-RUN mkdir -p /prerun && mkdir -p /postrun
+# Scripts to run before/after entrypoint, extra config script in /config
+RUN mkdir -p /prerun
+RUN mkdir -p /postrun
+RUN mkdir -p /config
 
 ENV HADOOP_HOME=/opt/hadoop-$HADOOP_VERSION
 ENV HADOOP_CONF_DIR=/etc/hadoop
@@ -179,7 +181,8 @@ ENV USER=$CLUSTER_ADMIN_USER
 ENV PATH $HADOOP_HOME/bin/:$PATH
 
 ADD entrypoint.sh /entrypoint.sh
+ADD functions.sh /functions.sh
 
-RUN chmod a+x /entrypoint.sh
+RUN chmod a+x /entrypoint.sh && chmod a+x /functions.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
