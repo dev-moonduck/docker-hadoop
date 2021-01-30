@@ -1,6 +1,5 @@
 #!/bin/bash
 
-sleep 3s
 SAFE_MODE_STATUS=`hdfs dfsadmin -safemode get`
 if [ "$SAFE_MODE_STATUS" = "Safe mode is ON" ]; then
     echo "Leaving safemode"
