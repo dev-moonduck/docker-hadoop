@@ -1,6 +1,6 @@
-FROM bde2020/hadoop-base:2.0.0-hadoop3.2.1-java8
+FROM docker-hadoop-base:1.0.0
 
-MAINTAINER Mun Duk Hyun <devmoonduck@gmail.com>
+MAINTAINER Mun Duk Hyun <dev.moonduck@gmail.com>
 
 # Allow buildtime config of HIVE_VERSION
 ARG HIVE_VERSION
@@ -48,7 +48,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 EXPOSE 10000
 EXPOSE 10002
 
-# Hive uses too old guava, hence causes error(https://stackoverflow.com/questions/58176627/how-can-i-ask-hive-to-provide-more-detailed-error) when schematool runs
+# Hive uses too old guava, it causes error(https://stackoverflow.com/questions/58176627/how-can-i-ask-hive-to-provide-more-detailed-error) when schematool runs
 COPY ./jars/guava-27.0-jre.jar $HIVE_HOME/lib/
 RUN rm -f $HIVE_HOME/lib/guava-19.0.jar
 

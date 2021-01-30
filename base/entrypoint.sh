@@ -31,6 +31,14 @@ function configure() {
     done
 }
 
+PRERUN_PATH=/prerun
+POSTRUN_PATH=/postrun
+
+for script in `ls $PRERUN_PATH`; do
+    echo "Running $script before entrypoint"
+    /bin/bash $script
+done
+
 configure /etc/hadoop/core-site.xml core CORE_CONF
 configure /etc/hadoop/hdfs-site.xml hdfs HDFS_CONF
 configure /etc/hadoop/yarn-site.xml yarn YARN_CONF
@@ -111,6 +119,11 @@ function wait_for_it()
 for i in ${SERVICE_PRECONDITION[@]}
 do
     wait_for_it ${i}
+done
+
+for script in `ls $POSTRUN_PATH`; do
+    echo "Running $script after entrypoint"
+    /bin/bash $script
 done
 
 exec $@

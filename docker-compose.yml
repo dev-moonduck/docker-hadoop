@@ -4,6 +4,7 @@ services:
   namenode:
     image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
     container_name: namenode
+    hostname: namenode
     restart: always
     ports:
       - 9870:9870
@@ -19,6 +20,7 @@ services:
   datanode1:
     image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
     container_name: datanode1
+    hostname: datanode1
     restart: always
     volumes:
       - hadoop_datanode1:/hadoop/dfs/data
@@ -34,6 +36,7 @@ services:
   datanode2:
     image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
     container_name: datanode2
+    hostname: datanode2
     restart: always
     volumes:
       - hadoop_datanode2:/hadoop/dfs/data
@@ -47,6 +50,7 @@ services:
   datanode3:
     image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
     container_name: datanode3
+    hostname: datanode3
     restart: always
     volumes:
       - hadoop_datanode3:/hadoop/dfs/data
@@ -60,6 +64,7 @@ services:
   resourcemanager:
     image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
     container_name: resourcemanager
+    hostname: resourcemanager
     restart: always
     environment:
       SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864"
@@ -73,6 +78,7 @@ services:
   nodemanager1:
     image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
     container_name: nodemanager
+    hostname: nodemanager
     restart: always
     environment:
       SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864 resourcemanager:8088"
@@ -86,6 +92,7 @@ services:
   historyserver:
     image: bde2020/hadoop-historyserver:2.0.0-hadoop3.2.1-java8
     container_name: historyserver
+    hostname: historyserver
     restart: always
     environment:
       SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864 resourcemanager:8088"
@@ -101,6 +108,7 @@ services:
   hive-server:
     image: docker-hive:latest
     container_name: hive-server
+    hostname: hive-server
     env_file:
       - ./hive/hadoop-hive.env
     environment:
@@ -113,6 +121,7 @@ services:
   hive-metastore:
     image: docker-hive:latest
     container_name: hive-metastore
+    hostname: hive-metastore
     env_file:
       - ./hive/hadoop-hive.env
     environment:
@@ -126,6 +135,7 @@ services:
   hive-metastore-db:
     image: postgres:13.1
     container_name: hive-metastore-db
+    hostname: hive-metastore-db
     environment:
       POSTGRES_PASSWORD: "postgres"
       POSTGRES_HOST_AUTH_METHOD: "trust"
@@ -139,6 +149,7 @@ services:
   hue:
     image: docker-hue
     container_name: hue
+    hostname: hue
     environment:
       SERVICE_PRECONDITION: "hive-metastore-db:5432 hive-server:10000 namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864"
     networks:
