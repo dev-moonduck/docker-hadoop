@@ -116,6 +116,8 @@ services:
       SERVICE_PRECONDITION: "hive-metastore-db:5432 namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864"
     ports:
       - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
     networks:
       - hadoop.net
   
