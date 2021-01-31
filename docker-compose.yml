@@ -120,20 +120,6 @@ services:
       - "10002:10002"
     networks:
       - hadoop.net
-  
-  # hive-metastore:
-  #   image: docker-hadoop-hive:1.0.0
-  #   container_name: hive-metastore
-  #   hostname: hive-metastore
-  #   env_file:
-  #     - ./hive/hadoop-hive.env
-  #   environment:
-  #     SERVICE_PRECONDITION: "hive-metastore-db:5432 namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864"
-  #   command: /opt/hive/bin/hive --service metastore
-  #   ports:
-  #     - "9083:9083"
-  #   networks:
-  #     - hadoop.net
 
   hive-metastore-db:
     image: postgres:13.1
