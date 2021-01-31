@@ -113,7 +113,7 @@ services:
       - ./hive/hadoop-hive.env
       - ./hadoop.env
     environment:
-      SERVICE_PRECONDITION: "hive-metastore-db:5432 namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864"
+      SERVICE_PRECONDITION: "cluster-db:5432 namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864"
     ports:
       - "10000:10000"
       - "10001:10001"
@@ -121,10 +121,10 @@ services:
     networks:
       - hadoop.net
 
-  hive-metastore-db:
+  cluster-db:
     image: postgres:13.1
-    container_name: hive-metastore-db
-    hostname: hive-metastore-db
+    container_name: cluster-db
+    hostname: cluster-db
     environment:
       POSTGRES_PASSWORD: "postgres"
       POSTGRES_HOST_AUTH_METHOD: "trust"
@@ -133,14 +133,15 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./hive/sql/:/docker-entrypoint-initdb.d/
+      - ./hive/sql/create_db.sql:/docker-entrypoint-initdb.d/create_hive_db.sql
+      - ./hue/sql/create_db.sql:/docker-entrypoint-initdb.d/create_hue_db.sql
   
   hue:
-    image: docker-hue
+    image: docker-hadoop-hue:1.0.0
     container_name: hue
     hostname: hue
     environment:
-      SERVICE_PRECONDITION: "hive-metastore-db:5432 hive-server:10000 namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864"
+      SERVICE_PRECONDITION: "cluster-db:5432 hive-server:10000 namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864"
     networks:
       - hadoop.net
     ports:
