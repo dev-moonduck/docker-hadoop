@@ -48,13 +48,13 @@ function handleUserOptions() {
             done
             
             if [ "${paramMap[proxy.user]}" = "true" ]; then
-                local configForHost="hadoop_proxyuser_${user}_hosts"
+                local configForHost="hadoop.proxyuser.${user}.hosts"
                 local valueForHost="${paramMap[proxy.hosts]}"
                 
                 if [ "$valueForHost" = "" ]; then
                     valueForHost="*"
                 fi
-                local configForGroup="hadoop_proxyuser_${user}_groups"
+                local configForGroup="hadoop.proxyuser.${user}.groups"
                 local valueForGroup="${paramMap[proxy.groups]}"
                 if [ "$valueForGroup" = "" ]; then
                     valueForGroup="*"

@@ -62,9 +62,6 @@ if [ -n "$GANGLIA_HOST" ]; then
     done > /etc/hadoop/hadoop-metrics2.properties
 fi
 
-# Add proxy users
-handleUserOptions
-
 for script in `ls $EXTRA_CONFIG_PATH/* 2> /dev/null`; do
     echo "Running $script to run extra config set script"
     /bin/bash $script
