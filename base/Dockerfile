@@ -183,7 +183,9 @@ ENV PATH $HADOOP_HOME/bin/:$PATH
 
 ADD entrypoint.sh /entrypoint.sh
 ADD functions.sh /functions.sh
+ADD add_proxy_users.sh /add_proxy_users.sh
 
-RUN chmod a+x /entrypoint.sh && chmod a+x /functions.sh
+RUN chmod a+x /entrypoint.sh && chmod a+x /functions.sh && chmod a+x /add_proxy_users.sh
+RUN /add_proxy_users.sh
 
 ENTRYPOINT ["/entrypoint.sh"]

@@ -41,7 +41,6 @@ ADD conf/hive-log4j2.properties $HIVE_HOME/conf
 ADD conf/ivysettings.xml $HIVE_HOME/conf
 ADD conf/llap-daemon-log4j2.properties $HIVE_HOME/conf
 
-
 COPY 100_hive_config.sh /config/
 COPY 999_startup.sh /postrun/
 
