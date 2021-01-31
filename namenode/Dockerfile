@@ -8,12 +8,11 @@ ENV HDFS_CONF_dfs_namenode_name_dir=file:///hadoop/dfs/name
 RUN mkdir -p /hadoop/dfs/name
 VOLUME /hadoop/dfs/name
 
-ADD run.sh /run.sh
+ADD 000_run.sh /postrun/
+ADD 100_initialize.sh /postrun/
 
-ADD initialize.sh /postrun/
-
-RUN chmod a+x /run.sh
+RUN chmod a+x /postrun/000_run.sh && chmod a+x /postrun/100_initialize.sh
 
 EXPOSE 9870
 
-CMD ["/run.sh"]
+CMD ["/postrun/000_run.sh"]

@@ -80,4 +80,4 @@ for script in `ls $POSTRUN_PATH/* 2> /dev/null`; do
     /bin/bash $script
 done
 
-exec $@
+tail -f /dev/null

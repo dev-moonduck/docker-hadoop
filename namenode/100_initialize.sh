@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source /functions.sh
+wait_for_it "namenode:9000"
+
 SAFE_MODE_STATUS=`hdfs dfsadmin -safemode get`
 if [ "$SAFE_MODE_STATUS" = "Safe mode is ON" ]; then
     echo "Leaving safemode"
@@ -14,14 +17,15 @@ for user in `printenv | grep $hadoop_username_prefix | sed -r "s/^$hadoop_userna
     user_path_in_hdfs="/user/$user"
     path_exist=`hdfs dfs -ls $user_path_in_hdfs`
     if [ "$path_exist" = "" ]; then
-        usergroup=`groups $user`
-        if [ "$usergroup" = "" ]; then
-            owner=$user
-        else
-            owner="$user:$usergroup"
-        fi
+        # usergroup=`groups $user`
+        # if [ "$usergroup" = "" ]; then
+        #     owner=$user
+        # else
+        #     owner="$user:$usergroup"
+        # fi
+        owner="$user:$user"
         echo "creating user home $user_path_in_hdfs owned by $owner"
-        hdfs dfs -mkdir $user_path_in_hdfs
+        hdfs dfs -mkdir -p $user_path_in_hdfs
         hdfs dfs -chown $owner $user_path_in_hdfs
     fi 
 done
