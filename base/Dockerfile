@@ -2,6 +2,7 @@ FROM debian:9
 
 MAINTAINER Mun Duk Hyun <dev.moonduck@gmail.com>
 
+# TODO: Bump up Java version(java 11 supported since Hadoop 3.3.0)
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       openjdk-8-jdk \
       net-tools \
@@ -17,7 +18,7 @@ RUN curl -O https://dist.apache.org/repos/dist/release/hadoop/common/KEYS
 
 RUN gpg --import KEYS
 
-ENV HADOOP_VERSION 3.2.1
+ENV HADOOP_VERSION 3.3.0
 ENV HADOOP_URL https://www.apache.org/dist/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz
 
 RUN set -x \
