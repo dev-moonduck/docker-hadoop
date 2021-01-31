@@ -17,8 +17,12 @@ ENV HADOOP_HOME /opt/hadoop-3.3.0
 
 WORKDIR /opt
 
+RUN echo "deb http://ftp.us.debian.org/debian sid main" >> /etc/apt/sources.list
+
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+
 #Install Hive and PostgreSQL JDBC
-RUN apt-get update && apt-get install -y wget procps && \
+RUN apt-get update && apt-get install -y wget procps openjdk-8-jdk && \
 	wget https://archive.apache.org/dist/hive/hive-$HIVE_VERSION/apache-hive-$HIVE_VERSION-bin.tar.gz && \
 	tar -xzvf apache-hive-$HIVE_VERSION-bin.tar.gz && \
 	mv apache-hive-$HIVE_VERSION-bin hive && \

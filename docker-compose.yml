@@ -140,16 +140,27 @@ services:
     image: docker-hadoop-hue:1.0.0
     container_name: hue
     hostname: hue
+    env_file:
+      - ./hive/hadoop-hive.env
+      - ./hadoop.env
     environment:
-      SERVICE_PRECONDITION: "cluster-db:5432 hive-server:10000 namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864"
+      SERVICE_PRECONDITION: "hive-server:10000"
     networks:
       - hadoop.net
     ports:
       - "8888:8888"
-  # presto-coordinator:
-  #   image: shawnzhu/prestodb:0.181
-  #   ports:
-  #     - "8080:8080"
+
+  trino:
+    image: docker-hadoop-trino:1.0.0
+    container_name: trino
+    hostname: trino
+    env_file:
+      - ./hive/hadoop-hive.env
+      - ./hadoop.env
+    environment:
+      SERVICE_PRECONDITION: "hive-server:10000"
+    networks:
+      - hadoop.net
   
 volumes:
   hadoop_namenode:
@@ -157,6 +168,7 @@ volumes:
   hadoop_datanode2:
   hadoop_datanode3:
   hadoop_historyserver:
+  hadoop_trino:
 
 networks:
   hadoop.net:
