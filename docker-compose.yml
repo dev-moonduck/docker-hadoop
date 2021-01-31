@@ -2,60 +2,162 @@ version: "3"
 
 services:
   namenode:
-    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    image: docker-hadoop-namenode:1.0.0
     container_name: namenode
+    hostname: namenode
     restart: always
     ports:
       - 9870:9870
-      - 9000:9000
     volumes:
       - hadoop_namenode:/hadoop/dfs/name
     environment:
       - CLUSTER_NAME=test
     env_file:
       - ./hadoop.env
+    networks:
+      - hadoop.net
 
-  datanode:
-    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
-    container_name: datanode
+  datanode1:
+    image: docker-hadoop-datanode:1.0.0
+    container_name: datanode1
+    hostname: datanode1
     restart: always
     volumes:
-      - hadoop_datanode:/hadoop/dfs/data
+      - hadoop_datanode1:/hadoop/dfs/data
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     env_file:
       - ./hadoop.env
+    ports:
+      - "9864:9864"
+    networks:
+      - hadoop.net
+
+  datanode2:
+    image: docker-hadoop-datanode:1.0.0
+    container_name: datanode2
+    hostname: datanode2
+    restart: always
+    volumes:
+      - hadoop_datanode2:/hadoop/dfs/data
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+    env_file:
+      - ./hadoop.env
+    networks:
+      - hadoop.net
+  
+  datanode3:
+    image: docker-hadoop-datanode:1.0.0
+    container_name: datanode3
+    hostname: datanode3
+    restart: always
+    volumes:
+      - hadoop_datanode3:/hadoop/dfs/data
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+    env_file:
+      - ./hadoop.env
+    networks:
+      - hadoop.net
   
   resourcemanager:
-    image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
+    image: docker-hadoop-resourcemanager:1.0.0
     container_name: resourcemanager
+    hostname: resourcemanager
     restart: always
     environment:
-      SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode:9864"
+      SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864"
     env_file:
       - ./hadoop.env
+    ports:
+      - "8088:8088"
+    networks:
+      - hadoop.net
 
   nodemanager1:
-    image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
+    image: docker-hadoop-nodemanager:1.0.0
     container_name: nodemanager
+    hostname: nodemanager
     restart: always
     environment:
-      SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode:9864 resourcemanager:8088"
+      SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864 resourcemanager:8088"
     env_file:
       - ./hadoop.env
+    ports:
+      - "8042:8042"
+    networks:
+      - hadoop.net
   
   historyserver:
-    image: bde2020/hadoop-historyserver:2.0.0-hadoop3.2.1-java8
+    image: docker-hadoop-historyserver:1.0.0
     container_name: historyserver
+    hostname: historyserver
     restart: always
     environment:
-      SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode:9864 resourcemanager:8088"
+      SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864 resourcemanager:8088"
     volumes:
       - hadoop_historyserver:/hadoop/yarn/timeline
     env_file:
       - ./hadoop.env
+    ports:
+      - "8188:8188"
+    networks:
+      - hadoop.net
+      
+  hive-server:
+    image: docker-hadoop-hive:1.0.0
+    container_name: hive-server
+    hostname: hive-server
+    env_file:
+      - ./hive/hadoop-hive.env
+      - ./hadoop.env
+    environment:
+      SERVICE_PRECONDITION: "cluster-db:5432 namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864"
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
+    networks:
+      - hadoop.net
+
+  cluster-db:
+    image: postgres:13.1
+    container_name: cluster-db
+    hostname: cluster-db
+    environment:
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+    networks:
+      - hadoop.net
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./hive/sql/create_db.sql:/docker-entrypoint-initdb.d/create_hive_db.sql
+      - ./hue/sql/create_db.sql:/docker-entrypoint-initdb.d/create_hue_db.sql
+  
+  hue:
+    image: docker-hadoop-hue:1.0.0
+    container_name: hue
+    hostname: hue
+    environment:
+      SERVICE_PRECONDITION: "cluster-db:5432 hive-server:10000 namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864"
+    networks:
+      - hadoop.net
+    ports:
+      - "8888:8888"
+  # presto-coordinator:
+  #   image: shawnzhu/prestodb:0.181
+  #   ports:
+  #     - "8080:8080"
   
 volumes:
   hadoop_namenode:
-  hadoop_datanode:
+  hadoop_datanode1:
+  hadoop_datanode2:
+  hadoop_datanode3:
   hadoop_historyserver:
+
+networks:
+  hadoop.net:
+    external: true

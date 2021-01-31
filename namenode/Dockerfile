@@ -1,6 +1,6 @@
-FROM bde2020/hadoop-base:2.0.0-hadoop3.2.1-java8
+FROM docker-hadoop-base:1.0.0
 
-MAINTAINER Ivan Ermilov <ivan.s.ermilov@gmail.com>
+MAINTAINER Mun Duk Hyun <dev.moonduck@gmail.com>
 
 HEALTHCHECK CMD curl -f http://localhost:9870/ || exit 1
 
@@ -8,9 +8,11 @@ ENV HDFS_CONF_dfs_namenode_name_dir=file:///hadoop/dfs/name
 RUN mkdir -p /hadoop/dfs/name
 VOLUME /hadoop/dfs/name
 
-ADD run.sh /run.sh
-RUN chmod a+x /run.sh
+ADD 000_run.sh /postrun/
+ADD 100_initialize.sh /postrun/
+
+RUN chmod a+x /postrun/000_run.sh && chmod a+x /postrun/100_initialize.sh
 
 EXPOSE 9870
 
-CMD ["/run.sh"]
+CMD ["/postrun/000_run.sh"]
