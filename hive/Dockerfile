@@ -41,13 +41,11 @@ ADD conf/hive-log4j2.properties $HIVE_HOME/conf
 ADD conf/ivysettings.xml $HIVE_HOME/conf
 ADD conf/llap-daemon-log4j2.properties $HIVE_HOME/conf
 
-COPY startup.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/startup.sh
 
-COPY create_schema.sh /postrun/
-COPY hive_config.sh /config/
+COPY 100_hive_config.sh /config/
+COPY 999_startup.sh /postrun/
 
-RUN chmod +x /postrun/create_schema.sh && chmod +x /config/hive_config.sh
+RUN chmod +x /config/100_hive_config.sh && chmod +x /postrun/999_startup.sh
 
 EXPOSE 10000
 EXPOSE 10002

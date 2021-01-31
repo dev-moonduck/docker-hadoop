@@ -118,7 +118,7 @@ ENV HADOOP_USER_NAME_$HIVE_USER=$HIVE_USER
 # proxy.hosts/groups are * by default. but explicitly set it as * is not allowed because * and @ is special meaning in bash
 # TODO: Make it work with *(asterisk) as value
 ENV HADOOP_USER_OPT_$HIVE_USER="proxy.user=true"
-RUN useradd --uid $HIVE_UID --no-log-init --groups $HIVE_GROUP --shell /bin/false --no-create-home --system -p $HIVE_USER_PASSWORD $HIVE_USER
+RUN useradd --uid $HIVE_UID --no-log-init --groups $HIVE_GROUP --shell /bin/false --create-home -p $HIVE_USER_PASSWORD $HIVE_USER
 
 ARG PRESTO_USER=presto
 ARG PRESTO_UID=340
