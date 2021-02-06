@@ -10,6 +10,9 @@ services:
       - 9870:9870
     volumes:
       - hadoop_namenode:/hadoop/dfs/name
+      - ./namenode/000_run.sh:/postrun/000_run.sh
+      - ./namenode/100_initialize.sh:/postrun/100_initialize.sh
+      - ./spark:/opt/spark
     environment:
       - CLUSTER_NAME=test
     env_file:
@@ -24,6 +27,8 @@ services:
     restart: always
     volumes:
       - hadoop_datanode1:/hadoop/dfs/data
+      - ./datanode/run.sh:/postrun/run.sh
+      - ./spark:/opt/spark
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     env_file:
@@ -40,6 +45,8 @@ services:
     restart: always
     volumes:
       - hadoop_datanode2:/hadoop/dfs/data
+      - ./datanode/run.sh:/postrun/run.sh
+      - ./spark:/opt/spark
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     env_file:
@@ -54,6 +61,8 @@ services:
     restart: always
     volumes:
       - hadoop_datanode3:/hadoop/dfs/data
+      - ./datanode/run.sh:/postrun/run.sh
+      - ./spark:/opt/spark
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     env_file:
@@ -70,6 +79,8 @@ services:
       SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864"
     env_file:
       - ./hadoop.env
+    volumes:
+      - ./resourcemanager/run.sh:/postrun/run.sh
     ports:
       - "8088:8088"
     networks:
@@ -84,6 +95,8 @@ services:
       SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864 resourcemanager:8088"
     env_file:
       - ./hadoop.env
+    volumes:
+      - ./nodemanager/run.sh:/postrun/run.sh
     ports:
       - "8042:8042"
     networks:
@@ -98,6 +111,7 @@ services:
       SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864 resourcemanager:8088"
     volumes:
       - hadoop_historyserver:/hadoop/yarn/timeline
+      - ./historyserver/run.sh:/postrun/run.sh
     env_file:
       - ./hadoop.env
     ports:
@@ -114,6 +128,9 @@ services:
       - ./hadoop.env
     environment:
       SERVICE_PRECONDITION: "cluster-db:5432 namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864"
+    volumes:
+      - ./hive/100_hive_config.sh:/config/100_hive_config.sh
+      - ./hive/999_startup.sh:/postrun/999_startup.sh
     ports:
       - "10000:10000"
       - "10001:10001"
@@ -161,7 +178,25 @@ services:
       SERVICE_PRECONDITION: "hive-server:10000"
     networks:
       - hadoop.net
-  
+
+  spark-adhoc:
+    image: docker-hadoop-hive:1.0.0
+    container_name: spark-adhoc
+    hostname: spark-adhoc
+    env_file:
+      - ./hive/hadoop-hive.env
+      - ./hadoop.env
+    volumes:
+      - ./hive/100_hive_config.sh:/config/100_hive_config.sh
+      - ./spark-adhoc/spark:/opt/spark
+      - ./spark-adhoc/run.sh:/postrun/run.sh
+    environment:
+      SERVICE_PRECONDITION: "hive-server:10000"
+    ports:
+      - "10010:10010"
+    networks:
+      - hadoop.net
+
 volumes:
   hadoop_namenode:
   hadoop_datanode1:

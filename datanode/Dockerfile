@@ -8,8 +8,8 @@ ENV HDFS_CONF_dfs_datanode_data_dir=file:///hadoop/dfs/data
 RUN mkdir -p /hadoop/dfs/data
 VOLUME /hadoop/dfs/data
 
-ADD run.sh /postrun/run.sh
-RUN chmod a+x /postrun/run.sh
+# ADD run.sh /postrun/run.sh
+# RUN chmod a+x /postrun/run.sh
 
 EXPOSE 9864
 
