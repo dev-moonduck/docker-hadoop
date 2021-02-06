@@ -188,4 +188,6 @@ ADD add_proxy_users.sh /add_proxy_users.sh
 RUN chmod a+x /entrypoint.sh && chmod a+x /functions.sh && chmod a+x /add_proxy_users.sh
 RUN /add_proxy_users.sh
 
+ENV SPARK_HOME=/opt/spark
+
 ENTRYPOINT ["/entrypoint.sh"]

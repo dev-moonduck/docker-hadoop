@@ -7,3 +7,8 @@ if [ ! -d $datadir ]; then
 fi
 
 $HADOOP_HOME/bin/hdfs --config $HADOOP_CONF_DIR datanode &
+
+source /functions.sh
+
+wait_for_it localhost:9864
+echo "Datanode has been up"
