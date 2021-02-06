@@ -119,7 +119,7 @@ ENV HADOOP_USER_NAME_$HIVE_USER=$HIVE_USER
 # proxy.hosts/groups are * by default. but explicitly set it as * is not allowed because * and @ is special meaning in bash
 # TODO: Make it work with *(asterisk) as value
 ENV HADOOP_USER_OPT_$HIVE_USER="proxy.user=true"
-RUN useradd --uid $HIVE_UID --no-log-init --groups $HIVE_GROUP --shell /bin/false --create-home -p $HIVE_USER_PASSWORD $HIVE_USER
+RUN useradd --uid $HIVE_UID --no-log-init --groups $HIVE_GROUP --shell /bin/bash --create-home -p $HIVE_USER_PASSWORD $HIVE_USER
 
 ARG TRINO_USER=trino
 ARG TRINO_UID=340
@@ -127,7 +127,7 @@ ARG TRINO_USER_PASSWORD=trino
 ARG TRINO_GROUP=$HADOOP_SVC_GROUP
 ENV HADOOP_USER_NAME_TRINO=$TRINO_USER
 ENV HADOOP_USER_OPT_$TRINO_USER="proxy.user=true"
-RUN useradd --uid $TRINO_UID --no-log-init --groups $TRINO_GROUP --shell /bin/false --create-home -p $TRINO_USER_PASSWORD $TRINO_USER
+RUN useradd --uid $TRINO_UID --no-log-init --groups $TRINO_GROUP --shell /bin/bash --create-home -p $TRINO_USER_PASSWORD $TRINO_USER
 
 ARG KAFKA_USER=kafka
 ARG KAFKA_UID=350
@@ -159,7 +159,7 @@ ARG SPARK_USER_PASSWORD=spark
 ARG SPARK_GROUP=$HADOOP_SVC_GROUP
 ENV HADOOP_USER_NAME_$SPARK_USER=$SPARK_USER
 ENV HADOOP_USER_OPT_$SPARK_USER="proxy.user=true"
-RUN useradd --uid $SPARK_UID --no-log-init --groups $SPARK_GROUP --shell /usr/sbin/nologin --no-create-home --system -p $SPARK_USER_PASSWORD $SPARK_USER
+RUN useradd --uid $SPARK_UID --no-log-init --groups $SPARK_GROUP --shell /bin/bash --create-home -p $SPARK_USER_PASSWORD $SPARK_USER
 
 # user service user / proxy user
 ARG SVC_USER=svc

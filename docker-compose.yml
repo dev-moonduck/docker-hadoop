@@ -12,7 +12,7 @@ services:
       - hadoop_namenode:/hadoop/dfs/name
       - ./namenode/000_run.sh:/postrun/000_run.sh
       - ./namenode/100_initialize.sh:/postrun/100_initialize.sh
-      - ./spark:/opt/spark
+      - ./spark-adhoc/spark:/opt/spark
     environment:
       - CLUSTER_NAME=test
     env_file:
@@ -29,7 +29,7 @@ services:
       - hadoop_datanode1:/hadoop/dfs/data
       - ./datanode/000_datanode_run.sh:/postrun/000_datanode_run.sh
       - ./datanode/100_nodemanager_run.sh:/postrun/100_nodemanager_run.sh
-      - ./spark:/opt/spark
+      - ./spark-adhoc/spark:/opt/spark
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     env_file:
@@ -49,11 +49,14 @@ services:
       - hadoop_datanode2:/hadoop/dfs/data
       - ./datanode/000_datanode_run.sh:/postrun/000_datanode_run.sh
       - ./datanode/100_nodemanager_run.sh:/postrun/100_nodemanager_run.sh
-      - ./spark:/opt/spark
+      - ./spark-adhoc/spark:/opt/spark
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     env_file:
       - ./hadoop.env
+    ports:
+      - "9865:9864"
+      - "8043:8042"
     networks:
       - hadoop.net
   
@@ -66,11 +69,14 @@ services:
       - hadoop_datanode3:/hadoop/dfs/data
       - ./datanode/000_datanode_run.sh:/postrun/000_datanode_run.sh
       - ./datanode/100_nodemanager_run.sh:/postrun/100_nodemanager_run.sh
-      - ./spark:/opt/spark
+      - ./spark-adhoc/spark:/opt/spark
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     env_file:
       - ./hadoop.env
+    ports:
+      - "9866:9864"
+      - "8044:8042"
     networks:
       - hadoop.net
   
@@ -89,22 +95,6 @@ services:
       - "8088:8088"
     networks:
       - hadoop.net
-
-  # nodemanager1:
-  #   image: docker-hadoop-nodemanager:1.0.0
-  #   container_name: nodemanager
-  #   hostname: nodemanager
-  #   restart: always
-  #   environment:
-  #     SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864 resourcemanager:8088"
-  #   env_file:
-  #     - ./hadoop.env
-  #   volumes:
-  #     - ./nodemanager/run.sh:/postrun/run.sh
-  #   ports:
-  #     - "8042:8042"
-  #   networks:
-  #     - hadoop.net
   
   historyserver:
     image: docker-hadoop-historyserver:1.0.0
@@ -115,11 +105,14 @@ services:
       SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode1:9864 datanode2:9864 datanode3:9864 resourcemanager:8088"
     volumes:
       - hadoop_historyserver:/hadoop/yarn/timeline
-      - ./historyserver/run.sh:/postrun/run.sh
+      - ./historyserver/001_run_yarn_hs.sh:/postrun/001_run_yarn_hs.sh
+      - ./historyserver/002_run_spark_hs.sh:/postrun/002_run_spark_hs.sh
+      - ./spark-adhoc/spark:/opt/spark
     env_file:
       - ./hadoop.env
     ports:
       - "8188:8188"
+      - "18080:18080"
     networks:
       - hadoop.net
       
@@ -197,7 +190,7 @@ services:
     environment:
       SERVICE_PRECONDITION: "hive-server:10000"
     ports:
-      - "10010:10010"
+      - "4040:4040"
     networks:
       - hadoop.net
 
