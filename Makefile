@@ -12,4 +12,4 @@ build-all-images:
 	docker build -t docker-hadoop-trino:$(current_branch) ./trino
 
 build-spark:
-	docker-compose up -d ./spark-builder
+	docker-compose -f ./spark-builder/docker-compose.yml up -d
