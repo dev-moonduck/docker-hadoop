@@ -72,6 +72,7 @@ Users are defined in [base](./base/Dockerfile) image
 
 
 # TODO
+- Get rid of useradd in base image, but use Ansible for adding new users
 - Apache Iceberg
 - Make Trino work
 - ETL Tool
