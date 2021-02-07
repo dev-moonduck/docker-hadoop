@@ -15,8 +15,12 @@ echo "remove lost+found from $namedir"
 rm -r $namedir/lost+found
 
 if [ "`ls -A $namedir`" == "" ]; then
-  echo "Formatting namenode name directory: $namedir"
+  echo "Formatting active namenode name directory: $namedir"
   $HADOOP_HOME/bin/hdfs --config $HADOOP_CONF_DIR namenode -format $CLUSTER_NAME
 fi
 
+$HADOOP_HOME/bin/hdfs --config $HADOOP_CONF_DIR zkfc -formatZK
+
 $HADOOP_HOME/bin/hdfs --config $HADOOP_CONF_DIR namenode &
+
+$HADOOP_HOME/bin/hdfs --config $HADOOP_CONF_DIR --daemon start zkfc &

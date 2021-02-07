@@ -2,7 +2,6 @@ FROM debian:10.7
 
 MAINTAINER Mun Duk Hyun <dev.moonduck@gmail.com>
 
-# TODO: Bump up Java version(java 11 supported since Hadoop 3.3.0)
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       openjdk-11-jdk \
       net-tools \
@@ -10,6 +9,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
       netcat \
       gnupg \
       libsnappy-dev \
+      procps \
     && rm -rf /var/lib/apt/lists/*
       
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/
@@ -32,7 +32,7 @@ RUN ln -s /opt/hadoop-$HADOOP_VERSION/etc/hadoop /etc/hadoop
 
 RUN mkdir /opt/hadoop-$HADOOP_VERSION/logs
 
-RUN mkdir /hadoop-data
+RUN mkdir -p /hadoop-data/
 
 # hadoop groups
 ARG HADOOP_GID=300
