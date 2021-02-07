@@ -16,5 +16,4 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
 RUN mkdir -p /target && git clone https://github.com/apache/spark.git && \
  cd spark && git checkout v$SPARK_VERSION \
  && ./dev/change-scala-version.sh $SCALA_VERSION \
- && ./dev/make-distribution.sh --name spark --tgz -Phive -Phive-thriftserver -Pyarn -Pscala-2.13 -DskipTests -Phadoop-provided -Dhadoop.version=3.3.0 \
- && mv spark.tgz /target && rm -rf /spark
+ && ./dev/make-distribution.sh --name spark --tgz -Phive -Phive-thriftserver -Pyarn -Pscala-2.13 -DskipTests -Phadoop-provided -Dhadoop.version=3.3.0 && mv /spark/spark-3.1.0-bin-spark.tgz /target/spark.tgz && rm -rf /spark
