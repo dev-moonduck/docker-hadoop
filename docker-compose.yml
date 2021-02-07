@@ -13,12 +13,36 @@ services:
       - ./namenode/000_run.sh:/postrun/000_run.sh
       - ./namenode/100_initialize.sh:/postrun/100_initialize.sh
       - ./spark:/opt/spark
+      - hadoop_internamenode:/mnt/namenode/shared/
     environment:
       - CLUSTER_NAME=test
     env_file:
       - ./hadoop.env
     networks:
-      - hadoop.net
+      hadoop.net:
+        aliases:
+          - namenode.master
+        
+  
+  # namenode2:
+  #   image: docker-hadoop-namenode:1.0.0
+  #   container_name: namenode2
+  #   hostname: namenode2
+  #   restart: always
+  #   ports:
+  #     - 9871:9870
+  #   volumes:
+  #     - hadoop_namenode2:/hadoop/dfs/name
+  #     - ./namenode/000_run.sh:/postrun/000_run.sh
+  #     - ./namenode/100_initialize.sh:/postrun/100_initialize.sh
+  #     - ./spark:/opt/spark
+  #     - hadoop_internamenode:/mnt/namenode/shared/
+  #   environment:
+  #     - CLUSTER_NAME=test
+  #   env_file:
+  #     - ./hadoop.env
+  #   networks:
+  #     - hadoop.net
 
   datanode1:
     image: docker-hadoop-datanode:1.0.0
@@ -27,18 +51,23 @@ services:
     restart: always
     volumes:
       - hadoop_datanode1:/hadoop/dfs/data
-      - ./datanode/000_datanode_run.sh:/postrun/000_datanode_run.sh
+      - ./datanode/001_datanode_run.sh:/postrun/001_datanode_run.sh
+      - ./datanode/000_zookeeper_run.sh:/postrun/000_zookeeper_run.sh
+      - ./datanode/zoo.cfg:/opt/zookeeper/conf/zoo.cfg
       - ./datanode/100_nodemanager_run.sh:/postrun/100_nodemanager_run.sh
       - ./spark:/opt/spark
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
+      MY_NODE_NUM: "1"
     env_file:
       - ./hadoop.env
     ports:
       - "9864:9864"
       - "8042:8042"
     networks:
-      - hadoop.net
+      hadoop.net:
+        aliases:
+          - zk1.hadoop
 
   datanode2:
     image: docker-hadoop-datanode:1.0.0
@@ -47,18 +76,23 @@ services:
     restart: always
     volumes:
       - hadoop_datanode2:/hadoop/dfs/data
-      - ./datanode/000_datanode_run.sh:/postrun/000_datanode_run.sh
+      - ./datanode/001_datanode_run.sh:/postrun/001_datanode_run.sh
+      - ./datanode/000_zookeeper_run.sh:/postrun/000_zookeeper_run.sh
+      - ./datanode/zoo.cfg:/opt/zookeeper/conf/zoo.cfg
       - ./datanode/100_nodemanager_run.sh:/postrun/100_nodemanager_run.sh
       - ./spark:/opt/spark
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
+      MY_NODE_NUM: "2"
     env_file:
       - ./hadoop.env
     ports:
       - "9865:9864"
       - "8043:8042"
     networks:
-      - hadoop.net
+      hadoop.net:
+        aliases:
+          - zk2.hadoop
   
   datanode3:
     image: docker-hadoop-datanode:1.0.0
@@ -67,18 +101,23 @@ services:
     restart: always
     volumes:
       - hadoop_datanode3:/hadoop/dfs/data
-      - ./datanode/000_datanode_run.sh:/postrun/000_datanode_run.sh
+      - ./datanode/001_datanode_run.sh:/postrun/001_datanode_run.sh
+      - ./datanode/000_zookeeper_run.sh:/postrun/000_zookeeper_run.sh
+      - ./datanode/zoo.cfg:/opt/zookeeper/conf/zoo.cfg
       - ./datanode/100_nodemanager_run.sh:/postrun/100_nodemanager_run.sh
       - ./spark:/opt/spark
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
+      MY_NODE_NUM: "3"
     env_file:
       - ./hadoop.env
     ports:
       - "9866:9864"
       - "8044:8042"
     networks:
-      - hadoop.net
+      hadoop.net:
+        aliases:
+          - zk3.hadoop
   
   resourcemanager:
     image: docker-hadoop-resourcemanager:1.0.0
@@ -94,7 +133,7 @@ services:
     ports:
       - "8088:8088"
     networks:
-      - hadoop.net
+      - hadoop.net 
   
   historyserver:
     image: docker-hadoop-historyserver:1.0.0
@@ -115,7 +154,9 @@ services:
       - "8188:8188"
       - "18080:18080"
     networks:
-      - hadoop.net
+      hadoop.net:
+        aliases:
+          - spark-historyserver
       
   hive-server:
     image: docker-hadoop-hive:1.0.0
@@ -134,7 +175,9 @@ services:
       - "10001:10001"
       - "10002:10002"
     networks:
-      - hadoop.net
+      hadoop.net:
+        aliases:
+          - hive-metastore
 
   cluster-db:
     image: postgres:13.1
@@ -197,6 +240,8 @@ services:
 
 volumes:
   hadoop_namenode:
+  hadoop_namenode2:
+  hadoop_internamenode:
   hadoop_datanode1:
   hadoop_datanode2:
   hadoop_datanode3:
