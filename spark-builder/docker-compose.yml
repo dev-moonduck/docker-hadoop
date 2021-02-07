@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  spark-builder:
+    build: 
+      context: .
+    image: spark:3.1.0_hadoop3.3.0_2.13
+    volumes:
+      - ./target/:/target/
