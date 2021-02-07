@@ -1,2 +1,2 @@
 data/
-./spark-adhoc/spark/**
+spark/*

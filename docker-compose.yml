@@ -12,7 +12,7 @@ services:
       - hadoop_namenode:/hadoop/dfs/name
       - ./namenode/000_run.sh:/postrun/000_run.sh
       - ./namenode/100_initialize.sh:/postrun/100_initialize.sh
-      - ./spark-adhoc/spark:/opt/spark
+      - ./spark:/opt/spark
     environment:
       - CLUSTER_NAME=test
     env_file:
@@ -29,7 +29,7 @@ services:
       - hadoop_datanode1:/hadoop/dfs/data
       - ./datanode/000_datanode_run.sh:/postrun/000_datanode_run.sh
       - ./datanode/100_nodemanager_run.sh:/postrun/100_nodemanager_run.sh
-      - ./spark-adhoc/spark:/opt/spark
+      - ./spark:/opt/spark
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     env_file:
@@ -49,7 +49,7 @@ services:
       - hadoop_datanode2:/hadoop/dfs/data
       - ./datanode/000_datanode_run.sh:/postrun/000_datanode_run.sh
       - ./datanode/100_nodemanager_run.sh:/postrun/100_nodemanager_run.sh
-      - ./spark-adhoc/spark:/opt/spark
+      - ./spark:/opt/spark
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     env_file:
@@ -69,7 +69,7 @@ services:
       - hadoop_datanode3:/hadoop/dfs/data
       - ./datanode/000_datanode_run.sh:/postrun/000_datanode_run.sh
       - ./datanode/100_nodemanager_run.sh:/postrun/100_nodemanager_run.sh
-      - ./spark-adhoc/spark:/opt/spark
+      - ./spark:/opt/spark
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     env_file:
@@ -107,7 +107,7 @@ services:
       - hadoop_historyserver:/hadoop/yarn/timeline
       - ./historyserver/001_run_yarn_hs.sh:/postrun/001_run_yarn_hs.sh
       - ./historyserver/002_run_spark_hs.sh:/postrun/002_run_spark_hs.sh
-      - ./spark-adhoc/spark:/opt/spark
+      - ./spark:/opt/spark
       - ./historyserver/spark_history_server.conf:/spark_history_server.conf
     env_file:
       - ./hadoop.env
@@ -185,7 +185,7 @@ services:
       - ./hive/hadoop-hive.env
       - ./hadoop.env
     volumes:
-      - ./spark-adhoc/spark:/opt/spark
+      - ./spark:/opt/spark
       - ./hive/100_hive_config.sh:/config/100_hive_config.sh
       - ./spark-adhoc/run.sh:/postrun/run.sh
     environment:
