@@ -108,6 +108,7 @@ services:
       - ./historyserver/001_run_yarn_hs.sh:/postrun/001_run_yarn_hs.sh
       - ./historyserver/002_run_spark_hs.sh:/postrun/002_run_spark_hs.sh
       - ./spark-adhoc/spark:/opt/spark
+      - ./historyserver/spark_history_server.conf:/spark_history_server.conf
     env_file:
       - ./hadoop.env
     ports:
