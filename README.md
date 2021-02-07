@@ -1,63 +1,57 @@
-[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/big-data-europe/Lobby)
+# Docker hadoop cluster
+This is hadoop docker cluster for test purpose. 
+It's not Psuedo-Distributed, but normal distributed hadoop cluster. If you want to build Hadoop Apps, this cluster can be good to test your app.  
+Basically Frameworks on top of hadoop in this cluster is based on my company tech stack.  
+This project was forked from [docker-hadoop](https://github.com/big-data-europe/docker-hadoop).
 
-# Changes
+# Diagram
+![Architectur](./docs/images/Architecture.png)
 
-Version 2.0.0 introduces uses wait_for_it script for the cluster startup
+# **Frameworks Version**  
+|  Framework      |  Version  |              |
+|-----------------|-----------|--------------|
+|  Hadoop         |  3.3.0    |              |
+|  Hive           |  3.1.2    |              |
+|  Spark          |  3.1.0    |  Scala 2.13  |
+|  Hue            |  4.9.0    |              |
+|  Trino(Presto)  |           |  TODO        | 
+|  Airflow        |           |  TODO        |
+    
 
-# Hadoop Docker
+# **Predefined Users**  
+Users are defined in [base](./base/Dockerfile) image
+|  Username  |  Password  |  is proxy?  |  Description  |
+|------------|------------|-------------|--------|
+|  hdfs      |  hdfs      |    -        |  Super user  |
+|  webhdfs   |  webhdfs   |    Y        | Webhdfs service user |
+|  hive      |  hive      |    Y        |  Hive service user  |
+|  trino     |  trino     |    Y        |  Trino service user  |
+|  kafka     |  kafka     |    Y        |  Kafka service user  |
+|  hue       |  hue       |    Y        |  Hue service user  |
+|  spark     |  spark     |    Y        |  Spark service user  |
+|  svc       |  svc       |    Y        |  User's service user  |
+|  ml_user   |  ml_user   |    N        |  ml team user  |
+|  bi_user   |  bi_user   |    N        |  bi team user  |
+|  dev_user  |  dev_user  |    N        |  dev team user  |
 
-## Supported Hadoop Versions
-See repository branches for supported hadoop versions
 
-## Quick Start
+# How does it work?
 
-To deploy an example HDFS cluster, run:
-```
-  docker-compose up
-```
 
-Run example wordcount job:
-```
-  make wordcount
-```
 
-Or deploy in swarm:
-```
-docker stack deploy -c docker-compose-v3.yml hadoop
-```
+# How to add / remove datanode?
 
-`docker-compose` creates a docker network that can be found by running `docker network list`, e.g. `dockerhadoop_default`.
 
-Run `docker network inspect` on the network (e.g. `dockerhadoop_default`) to find the IP the hadoop interfaces are published on. Access these interfaces with the following URLs:
 
-* Namenode: http://<dockerhadoop_IP_address>:9870/dfshealth.html#tab-overview
-* History server: http://<dockerhadoop_IP_address>:8188/applicationhistory
-* Datanode: http://<dockerhadoop_IP_address>:9864/
-* Nodemanager: http://<dockerhadoop_IP_address>:8042/node
-* Resource manager: http://<dockerhadoop_IP_address>:8088/
 
-## Configure Environment Variables
+# Limitations
+- Namenode HA is not available
+- Federation is not available
+- Trino
+- Client outside container can use only WebHDFS
 
-The configuration parameters can be specified in the hadoop.env file or as environmental variables for specific services (e.g. namenode, datanode etc.):
-```
-  CORE_CONF_fs_defaultFS=hdfs://namenode:8020
-```
 
-CORE_CONF corresponds to core-site.xml. fs_defaultFS=hdfs://namenode:8020 will be transformed into:
-```
-  <property><name>fs.defaultFS</name><value>hdfs://namenode:8020</value></property>
-```
-To define dash inside a configuration parameter, use triple underscore, such as YARN_CONF_yarn_log___aggregation___enable=true (yarn-site.xml):
-```
-  <property><name>yarn.log-aggregation-enable</name><value>true</value></property>
-```
+# TODO
+- Apache Iceberg
+- Make Trino work
 
-The available configurations are:
-* /etc/hadoop/core-site.xml CORE_CONF
-* /etc/hadoop/hdfs-site.xml HDFS_CONF
-* /etc/hadoop/yarn-site.xml YARN_CONF
-* /etc/hadoop/httpfs-site.xml HTTPFS_CONF
-* /etc/hadoop/kms-site.xml KMS_CONF
-* /etc/hadoop/mapred-site.xml  MAPRED_CONF
-
-If you need to extend some other configuration file, refer to base/entrypoint.sh bash script.
