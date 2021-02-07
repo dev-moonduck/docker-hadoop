@@ -65,9 +65,8 @@ Users are defined in [base](./base/Dockerfile) image
 
 
 # Limitations
-- Namenode HA is not available
 - Federation is not available
-- Trino
+- Trino(Presto) is not available yet
 - Client outside container can use only WebHDFS
 
 
