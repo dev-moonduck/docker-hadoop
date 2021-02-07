@@ -1,4 +1,4 @@
-FROM gethue/hue:20210122-162227
+FROM gethue/hue:4.9.0
 
 COPY --from=docker-hadoop-hive:1.0.0 /etc/hadoop /etc/hadoop
 COPY --from=docker-hadoop-hive:1.0.0 /opt/hive/ /opt/hive
