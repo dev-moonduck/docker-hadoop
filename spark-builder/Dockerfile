@@ -1,6 +1,6 @@
 FROM debian:10.7
 
-ARG SPARK_VERSION=3.1.1
+ARG SPARK_VERSION=3.1.0
 ARG SCALA_VERSION=2.13
 
 COPY --from=openjdk:8-jdk-slim /usr/local/openjdk-8 /usr/local/openjdk-8

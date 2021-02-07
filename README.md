@@ -7,6 +7,26 @@ This project was forked from [docker-hadoop](https://github.com/big-data-europe/
 # Diagram
 ![Architectur](./docs/images/Architecture.png)
 
+# Getting started
+## 1. Build Spark
+```bash
+$> make build-spark
+```
+It will take times. Basically it builds spark 3.1 with Hadoop 3.3.0, Scala 2.13, yarn, hive-thrift server
+The reason that builds spark is because current released spark version is built on Hadoop2.x/Scala 2.12
+## 2. Build All images
+```bash
+$> make build-all-images
+```
+It will build all required images.
+
+## 3. Run images
+```bash
+$> docker-compose up -d
+```
+
+Enjoy!
+
 # **Frameworks Version**  
 |  Framework      |  Version  |              |
 |-----------------|-----------|--------------|
@@ -54,4 +74,10 @@ Users are defined in [base](./base/Dockerfile) image
 # TODO
 - Apache Iceberg
 - Make Trino work
+- ETL Tool
 
+# Tested machine
+- Macbook PRO(Catalina) 32GB DDR4 2400Mhz 8Core Intel Core i9
+
+# Miscellaneous
+- It's welcome to raise PR/Issue for this repo If you faced an issue
