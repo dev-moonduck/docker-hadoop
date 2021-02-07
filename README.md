@@ -75,6 +75,7 @@ Users are defined in [base](./base/Dockerfile) image
 - Apache Iceberg
 - Make Trino work
 - ETL Tool
+- Build secure cluster(on Kerberos or something else)
 
 # Tested machine
 - Macbook PRO(Catalina) 32GB DDR4 2400Mhz 8Core Intel Core i9
