@@ -9,9 +9,8 @@ services:
     ports:
       - 9870:9870
     volumes:
-      - ./namenode/000_active_nn_run.sh:/postrun/000_active_nn_run.sh
-      - ./namenode/100_initialize.sh:/postrun/100_initialize.sh
-      - ./spark:/opt/spark
+      - ./namenode/nn1/000_active_nn_run.sh:/postrun/000_active_nn_run.sh
+      - ./namenode/nn1/100_initialize.sh:/postrun/100_initialize.sh
     environment:
         CLUSTER_NAME: nameservice
         SERVICE_PRECONDITION: "journal1.hadoop:8485 journal2.hadoop:8485 journal3.hadoop:8485 zk1.hadoop:2181 zk2.hadoop:2181 zk3.hadoop:2181"
@@ -21,7 +20,8 @@ services:
       hadoop.net:
         aliases:
           - namenode1
-        
+  
+  # TODO: ResourceManager run on this container as well
   namenode2:
     image: docker-hadoop-namenode:1.0.0
     container_name: namenode2
@@ -29,9 +29,10 @@ services:
     restart: always
     ports:
       - 9871:9870
+      - 8088:8088
     volumes:
-      - ./namenode/000_standby_nn_run.sh:/postrun/000_standby_nn_run.sh
-      - ./spark:/opt/spark
+      - ./namenode/nn2/000_standby_nn_run.sh:/postrun/000_standby_nn_run.sh
+      - ./namenode/rm/100_run_rm.sh:/postrun/100_run_rm.sh
     environment:
       CLUSTER_NAME: nameservice
       SERVICE_PRECONDITION: "journal1.hadoop:8485 journal2.hadoop:8485 journal3.hadoop:8485 zk1.hadoop:2181 zk2.hadoop:2181 zk3.hadoop:2181 namenode1:9000"
@@ -41,7 +42,16 @@ services:
       hadoop.net:
         aliases:
           - namenode2
-
+          - resourcemanager
+  # TODO: Each datanode has NodeManager in same container
+  # Also, There is additional services in the datanode,
+  # datanode1: Zookeeper, Journal Node, 
+  # datanode2: Zookeeper, Journal Node, 
+  # datanode3: Zookeeper, Journal Node, 
+  # datanode4: Hive Thrift server, Hive Metastore
+  # datanode5: Hue
+  # datanode6: Spark ThriftServer
+  # datanode7: Yarn HistoryServer
   datanode1:
     image: docker-hadoop-datanode:1.0.0
     container_name: datanode1
@@ -117,21 +127,21 @@ services:
           - zk3.hadoop
           - journal3.hadoop
   
-  resourcemanager:
-    image: docker-hadoop-resourcemanager:1.0.0
-    container_name: resourcemanager
-    hostname: resourcemanager
-    restart: always
-    environment:
-      SERVICE_PRECONDITION: "namenode1:9870 namenode2:9870 datanode1:9864 datanode2:9864 datanode3:9864"
-    env_file:
-      - ./hadoop.env
-    volumes:
-      - ./resourcemanager/run.sh:/postrun/run.sh
-    ports:
-      - "8088:8088"
-    networks:
-      - hadoop.net 
+  # resourcemanager:
+  #   image: docker-hadoop-resourcemanager:1.0.0
+  #   container_name: resourcemanager
+  #   hostname: resourcemanager
+  #   restart: always
+  #   environment:
+  #     SERVICE_PRECONDITION: "namenode1:9870 namenode2:9870 datanode1:9864 datanode2:9864 datanode3:9864"
+  #   env_file:
+  #     - ./hadoop.env
+  #   volumes:
+  #     - ./resourcemanager/run.sh:/postrun/run.sh
+  #   ports:
+  #     - "8088:8088"
+  #   networks:
+  #     - hadoop.net 
   
   historyserver:
     image: docker-hadoop-historyserver:1.0.0
@@ -203,6 +213,8 @@ services:
       SERVICE_PRECONDITION: "hive-server:10000"
     networks:
       - hadoop.net
+    volumes:
+      - ./spark:/opt/spark
     ports:
       - "8888:8888"
 
