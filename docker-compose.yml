@@ -82,7 +82,7 @@ services:
       - ./datanode/run_nodemanager.sh:/scripts/run_nodemanager.sh
       - ./hive/hive_config.sh:/config/hive_config.sh
       - ./datanode/zoo.cfg:/opt/zookeeper/conf/zoo.cfg
-      - ./spark:/opt/spark
+      - ./spark/spark-bin:/opt/spark
     environment:
       MY_NODE_NUM: "1"
     env_file:
@@ -109,7 +109,7 @@ services:
       - ./datanode/run_nodemanager.sh:/scripts/run_nodemanager.sh
       - ./hive/hive_config.sh:/config/hive_config.sh
       - ./datanode/zoo.cfg:/opt/zookeeper/conf/zoo.cfg
-      - ./spark:/opt/spark
+      - ./spark/spark-bin:/opt/spark
     environment:
       MY_NODE_NUM: "2"
     env_file:
@@ -136,7 +136,7 @@ services:
       - ./datanode/run_nodemanager.sh:/scripts/run_nodemanager.sh
       - ./hive/hive_config.sh:/config/hive_config.sh
       - ./datanode/zoo.cfg:/opt/zookeeper/conf/zoo.cfg
-      - ./spark:/opt/spark
+      - ./spark/spark-bin:/opt/spark
     environment:
       MY_NODE_NUM: "3"
     env_file:
@@ -162,7 +162,7 @@ services:
       - ./hive/run_hive_metastore.sh:/scripts/run_hive_metastore.sh
       - ./hive/run_hive_server.sh:/scripts/run_hive_server.sh
       - ./hive/hive_config.sh:/config/hive_config.sh
-      - ./spark:/opt/spark
+      - ./spark/spark-bin:/opt/spark
     env_file:
       - ./hadoop.env
       - ./hive/hadoop-hive.env
@@ -188,7 +188,7 @@ services:
       - ./datanode/run_datanode.sh:/scripts/run_datanode.sh
       - ./datanode/run_nodemanager.sh:/scripts/run_nodemanager.sh
       - ./hive/hive_config.sh:/config/hive_config.sh
-      - ./spark:/opt/spark
+      - ./spark/spark-bin:/opt/spark
     env_file:
       - ./hadoop.env
       - ./hive/hadoop-hive.env
@@ -206,9 +206,9 @@ services:
     volumes:
       - ./datanode/run_datanode.sh:/scripts/run_datanode.sh
       - ./datanode/run_nodemanager.sh:/scripts/run_nodemanager.sh
-      - ./spark-adhoc/run_spark_thrift_server.sh:/scripts/run_spark_thrift_server.sh
+      - ./spark/run_spark_thrift_server.sh:/scripts/run_spark_thrift_server.sh
       - ./hive/hive_config.sh:/config/hive_config.sh
-      - ./spark:/opt/spark
+      - ./spark/spark-bin:/opt/spark
     env_file:
       - ./hadoop.env
       - ./hive/hadoop-hive.env
@@ -230,7 +230,7 @@ services:
       - ./datanode/run_datanode.sh:/scripts/run_datanode.sh
       - ./datanode/run_nodemanager.sh:/scripts/run_nodemanager.sh
       - ./hive/hive_config.sh:/config/hive_config.sh
-      - ./spark:/opt/spark
+      - ./spark/spark-bin:/opt/spark
     env_file:
       - ./hadoop.env
       - ./hive/hadoop-hive.env
@@ -239,50 +239,6 @@ services:
       - 8047:8042
     networks:
       hadoop.net:
-
-  # historyserver:
-  #   image: docker-hadoop-historyserver:1.0.0
-  #   container_name: historyserver
-  #   hostname: historyserver
-  #   restart: always
-  #   environment:
-  #     SERVICE_PRECONDITION: "namenode1:9870 namenode2:9870 datanode1:9864 datanode2:9864 datanode3:9864 resourcemanager:8088"
-  #   volumes:
-  #     # - hadoop_historyserver:/hadoop/yarn/timeline
-  #     - ./historyserver/001_run_yarn_hs.sh:/postrun/001_run_yarn_hs.sh
-  #     - ./historyserver/002_run_spark_hs.sh:/postrun/002_run_spark_hs.sh
-  #     - ./spark:/opt/spark
-  #     - ./historyserver/spark_history_server.conf:/spark_history_server.conf
-  #   env_file:
-  #     - ./hadoop.env
-  #   ports:
-  #     - "8188:8188"
-  #     - "18080:18080"
-  #   networks:
-  #     hadoop.net:
-  #       aliases:
-  #         - spark-historyserver
-      
-  # hive-server:
-  #   image: docker-hadoop-hive:1.0.0
-  #   container_name: hive-server
-  #   hostname: hive-server
-  #   env_file:
-  #     - ./hive/hadoop-hive.env
-  #     - ./hadoop.env
-  #   environment:
-  #     SERVICE_PRECONDITION: "cluster-db:5432 namenode1:9870 namenode2:9870 datanode1:9864 datanode2:9864 datanode3:9864"
-  #   volumes:
-  #     - ./hive/100_hive_config.sh:/config/100_hive_config.sh
-  #     - ./hive/999_startup.sh:/postrun/999_startup.sh
-  #   ports:
-  #     - "10000:10000"
-  #     - "10001:10001"
-  #     - "10002:10002"
-  #   networks:
-  #     hadoop.net:
-  #       aliases:
-  #         - hive-metastore
 
   cluster-db:
     image: postgres:13.1
@@ -311,7 +267,7 @@ services:
   #   networks:
   #     - hadoop.net
   #   volumes:
-  #     - ./spark:/opt/spark
+  #     - ./spark/spark-bin:/opt/spark
   #   ports:
   #     - "8888:8888"
 
@@ -326,24 +282,6 @@ services:
   # #     SERVICE_PRECONDITION: "hive-server:10000"
   # #   networks:
   # #     - hadoop.net
-
-  # spark-adhoc:
-  #   image: docker-hadoop-hive:1.0.0
-  #   container_name: spark-adhoc
-  #   hostname: spark-adhoc
-  #   env_file:
-  #     - ./hive/hadoop-hive.env
-  #     - ./hadoop.env
-  #   volumes:
-  #     - ./spark:/opt/spark
-  #     - ./hive/100_hive_config.sh:/config/100_hive_config.sh
-  #     - ./spark-adhoc/run.sh:/postrun/run.sh
-  #   environment:
-  #     SERVICE_PRECONDITION: "hive-server:10000"
-  #   ports:
-  #     - "4040:4040"
-  #   networks:
-  #     - hadoop.net
 
 networks:
   hadoop.net:
