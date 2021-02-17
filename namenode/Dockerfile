@@ -4,10 +4,9 @@ MAINTAINER Mun Duk Hyun <dev.moonduck@gmail.com>
 
 HEALTHCHECK CMD curl -f http://localhost:9870/ || exit 1
 
-ENV HDFS_CONF_dfs_namenode_name_dir=file:///hadoop/dfs/name
-RUN mkdir -p /hadoop/dfs/name 
+RUN mkdir -p /hadoop/dfs/name && mkdir -p /hadoop/yarn/timeline && mkdir -p /tmp/spark-events
 VOLUME /hadoop/dfs/name
 
 EXPOSE 9870
 
-CMD ["/postrun/000_run.sh"]
+CMD ["/bin/bash"]

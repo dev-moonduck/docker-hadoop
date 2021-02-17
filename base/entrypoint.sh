@@ -67,14 +67,6 @@ for script in `ls $EXTRA_CONFIG_PATH/* 2> /dev/null`; do
     /bin/bash $script
 done
 
-for i in ${SERVICE_PRECONDITION[@]}
-do
-    wait_for_it ${i}
-done
-
-for script in `ls $POSTRUN_PATH/* 2> /dev/null`; do
-    echo "Running $script after entrypoint"
-    /bin/bash $script
-done
+python3 /agent.py /scripts 3333 &
 
 tail -f /dev/null

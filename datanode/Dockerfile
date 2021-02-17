@@ -14,4 +14,4 @@ VOLUME /hadoop/dfs/data
 
 EXPOSE 9864
 
-CMD ["/postrun/run.sh"]
+CMD ["/bin/bash"]

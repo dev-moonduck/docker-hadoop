@@ -4,4 +4,4 @@ if [ "$MY_NODE_NUM" = "" ]; then
 fi
 
 echo "$MY_NODE_NUM" > $ZOOKEEPER_HOME/data/myid
-$ZOOKEEPER_HOME/bin/zkServer.sh start &
+$ZOOKEEPER_HOME/bin/zkServer.sh start

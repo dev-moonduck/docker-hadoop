@@ -10,6 +10,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
       gnupg \
       libsnappy-dev \
       procps \
+      python3 \
     && rm -rf /var/lib/apt/lists/*
       
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/
@@ -18,7 +19,8 @@ RUN curl -O https://dist.apache.org/repos/dist/release/hadoop/common/KEYS
 
 RUN gpg --import KEYS
 
-ENV HADOOP_VERSION 3.3.0
+ARG HADOOP_VERSION
+ENV HADOOP_VERSION=${HADOOP_VERSION:-3.3.0}
 ENV HADOOP_URL https://www.apache.org/dist/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz
 
 RUN set -x \
@@ -174,6 +176,7 @@ RUN useradd --uid $SVC_UID --no-log-init --groups $SVC_GROUP --shell /usr/sbin/n
 RUN mkdir -p /prerun
 RUN mkdir -p /postrun
 RUN mkdir -p /config
+RUN mkdir -p /scripts
 
 ENV HADOOP_HOME=/opt/hadoop-$HADOOP_VERSION
 ENV HADOOP_CONF_DIR=/etc/hadoop
@@ -184,6 +187,7 @@ ENV PATH $HADOOP_HOME/bin/:$PATH
 ADD entrypoint.sh /entrypoint.sh
 ADD functions.sh /functions.sh
 ADD add_proxy_users.sh /add_proxy_users.sh
+ADD ./agent.py /agent.py
 
 RUN chmod a+x /entrypoint.sh && chmod a+x /functions.sh && chmod a+x /add_proxy_users.sh
 RUN /add_proxy_users.sh
