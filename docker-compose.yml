@@ -46,7 +46,7 @@ services:
     volumes:
       - ./namenode/run_standby_nn.sh:/scripts/run_standby_nn.sh
       - ./namenode/run_rm.sh:/scripts/run_rm.sh
-      - ./historyserver/run_yarn_hs.sh:/scripts/run_yarn_hs.sh
+      - ./namenode/run_yarn_hs.sh:/scripts/run_yarn_hs.sh
       - ./spark/run_spark_hs.sh:/scripts/run_spark_hs.sh
       - ./spark/spark_history_server.conf:/spark_history_server.conf
     environment:
