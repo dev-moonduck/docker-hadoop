@@ -1,8 +1,7 @@
-FROM gethue/hue:4.9.0
+# FROM gethue/hue:4.9.0
+FROM docker-hadoop-hive:1.0.0
 
-COPY --from=docker-hadoop-hive:1.0.0 /etc/hadoop /etc/hadoop
-COPY --from=docker-hadoop-hive:1.0.0 /opt/hive/ /opt/hive
-COPY --from=docker-hadoop-hive:1.0.0 /functions.sh /functions.sh
+COPY --from=gethue/hue:4.9.0 /usr/share/hue /usr/share/hue
 
 ADD hue.ini /usr/share/hue/desktop/conf/hue.ini
 

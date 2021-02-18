@@ -1,8 +1,5 @@
 #!/bin/bash
 
-source /functions.sh
-wait_for_it "namenode1:9000"
-
 SAFE_MODE_STATUS=`hdfs dfsadmin -safemode get`
 if [ "$SAFE_MODE_STATUS" = "Safe mode is ON" ]; then
     echo "Leaving safemode"
@@ -23,3 +20,15 @@ for user in `printenv | grep $hadoop_username_prefix | sed -r "s/^$hadoop_userna
         hdfs dfs -chown $owner $user_path_in_hdfs
     fi 
 done
+
+# upload files as described in upload.csv
+while read -r line; do
+    if [ "$line" != "" ]; then
+        local_file=`echo "$line" | cut -d"," -f1`
+        hdfs_path=`echo "$line" | cut -d"," -f2`
+
+        hadoop fs -mkdir -p $hdfs_path
+        hadoop fs -copyFromLocal $local_file $hdfs_path
+        echo "Local file $local_file has been uploaded to $hdfs_path in HDFS"
+    fi
+done < /initialization/upload.csv

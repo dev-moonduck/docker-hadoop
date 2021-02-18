@@ -23,6 +23,29 @@ function wait_agent()
     echo "Agent in $agent_addr is now running!"
 }
 
+function wait_files_in_hdfs()
+{
+    local file_path=$1
+    local grep_text=$2
+    local retry_seconds=$3
+    local max_try=$4
+    local i=0
+    local file_in_hdfs=`hdfs dfs -ls $file_path 2> /dev/null  | grep $grep_text`
+    until [ "$file_in_hdfs" != "" ]; do
+      echo "$file_in_hdfs is not available in HDFS yet. Try in ${retry_seconds}s once again ..."
+      if (( $i == $max_try )); then
+        echo "$file_in_hdfs is not available in HDFS is still not available; giving up after ${max_try} tries. :/"
+        exit 1
+      fi
+      
+      let "i++"
+      sleep $retry_seconds
+
+      file_in_hdfs=`hdfs dfs -ls $file_path 2> /dev/null  | grep $grep_text`
+    done
+    echo "$file_in_hdfs is now available in HDFS."
+}
+
 # Run Journal Node
 echo "Trying to run Journal nodes..."
 JOURNAL_RUN_SCRIPT="/scripts/run_journal.sh"
@@ -101,6 +124,10 @@ run_remote_script $agent_addr "/scripts/run_rm.sh"
 wait_for_it "$RM_ADDR:$RM_PORT"
 echo "Resource manager has been up!"
 
+# Initializing hdfs related(leaving safe-mode, create user, upload files in HDFS...)
+run_remote_script "$STANDBY_NAMENODE:$AGENT_PORT" "/scripts/initialize.sh"
+echo "Mandatory files is being uploaded to HDFS"
+
 # Run Hive metastore
 wait_for_it "cluster-db:5432" # Wait until metastore db up
 HMS_HOST="hive-metastore"
@@ -135,6 +162,9 @@ echo "Spark history server has been up!"
 
 wait_for_it "$HMS_HOST:$HMS_PORT"
 echo "Hive metastore has been up!"
+
+# Waiting for tez files in HDFS
+# wait_files_in_hdfs /apps/tez/apache-tez-0.9.2-bin.tar.gz /apps/tez 5 100
 
 # Run hive server
 HIVE_SERVER_ADDR="hive-server"

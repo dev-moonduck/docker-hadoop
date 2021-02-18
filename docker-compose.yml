@@ -47,8 +47,10 @@ services:
       - ./namenode/run_standby_nn.sh:/scripts/run_standby_nn.sh
       - ./namenode/run_rm.sh:/scripts/run_rm.sh
       - ./namenode/run_yarn_hs.sh:/scripts/run_yarn_hs.sh
+      - ./namenode/initialize.sh:/scripts/initialize.sh
       - ./spark/run_spark_hs.sh:/scripts/run_spark_hs.sh
       - ./spark/spark_history_server.conf:/spark_history_server.conf
+      - ./initialization/:/initialization/
     environment:
       CLUSTER_NAME: nameservice
       # SERVICE_PRECONDITION: "journal1.hadoop:8485 journal2.hadoop:8485 journal3.hadoop:8485 zk1.hadoop:2181 zk2.hadoop:2181 zk3.hadoop:2181 namenode1:9000"
