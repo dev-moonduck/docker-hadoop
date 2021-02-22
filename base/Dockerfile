@@ -184,14 +184,14 @@ ENV MULTIHOMED_NETWORK=1
 ENV USER=$CLUSTER_ADMIN_USER
 ENV PATH $HADOOP_HOME/bin/:$PATH
 
-ADD entrypoint.sh /entrypoint.sh
-ADD functions.sh /functions.sh
-ADD add_proxy_users.sh /add_proxy_users.sh
-ADD ./agent.py /agent.py
+ADD entrypoint.sh /scripts/entrypoint.sh
+ADD functions.sh /scripts/functions.sh
+ADD add_proxy_users.sh /scripts/add_proxy_users.sh
+ADD ./agent.py /scripts/agent.py
 
-RUN chmod a+x /entrypoint.sh && chmod a+x /functions.sh && chmod a+x /add_proxy_users.sh
-RUN /add_proxy_users.sh
+RUN chmod a+x /scripts/entrypoint.sh && chmod a+x /scripts/functions.sh && chmod a+x /scripts/add_proxy_users.sh
+RUN /scripts/add_proxy_users.sh
 
 ENV SPARK_HOME=/opt/spark
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/scripts/entrypoint.sh"]

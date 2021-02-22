@@ -6,7 +6,7 @@ services:
     container_name: "cluster-initializer"
     volumes:
       - ./coordinator/run_cluster.sh:/run_cluster.sh
-      - ./base/functions.sh:/functions.sh
+      - ./base/functions.sh:/scripts/functions.sh
     entrypoint: /run_cluster.sh
     networks:
       hadoop.net:
@@ -69,8 +69,8 @@ services:
   # datanode2: Zookeeper, Journal Node, 
   # datanode3: Zookeeper, Journal Node, 
   # datanode4: Hive Thrift server, Hive Metastore
-  # datanode5: Hue
-  # datanode6: Spark ThriftServer
+  # datanode5: Hue, Spark ThriftServer
+  # datanode6: 
   # datanode7: 
   datanode1:
     image: docker-hadoop-hive:1.0.0
@@ -182,7 +182,7 @@ services:
           - hive-metastore
   
   datanode5:
-    image: docker-hadoop-hive:1.0.0
+    image: docker-hadoop-hue:1.0.0
     container_name: datanode5
     hostname: datanode5
     restart: always
@@ -191,14 +191,21 @@ services:
       - ./datanode/run_nodemanager.sh:/scripts/run_nodemanager.sh
       - ./hive/hive_config.sh:/config/hive_config.sh
       - ./spark/spark-bin:/opt/spark
+      - ./spark/run_spark_thrift_server.sh:/scripts/run_spark_thrift_server.sh
+      - ./hue/run_hue.sh:/scripts/run_hue.sh
     env_file:
       - ./hadoop.env
       - ./hive/hadoop-hive.env
     ports:
       - 9865:9864
       - 8045:8042
+      - 4040:4040
+      - 8888:8888
     networks:
       hadoop.net:
+        aliases:
+          - spark-adhoc
+          - hue
   
   datanode6:
     image: docker-hadoop-hive:1.0.0
@@ -208,7 +215,6 @@ services:
     volumes:
       - ./datanode/run_datanode.sh:/scripts/run_datanode.sh
       - ./datanode/run_nodemanager.sh:/scripts/run_nodemanager.sh
-      - ./spark/run_spark_thrift_server.sh:/scripts/run_spark_thrift_server.sh
       - ./hive/hive_config.sh:/config/hive_config.sh
       - ./spark/spark-bin:/opt/spark
     env_file:
@@ -217,11 +223,8 @@ services:
     ports:
       - 9866:9864
       - 8046:8042
-      - 4040:4040
     networks:
       hadoop.net:
-        aliases:
-          - spark-adhoc
 
   datanode7:
     image: docker-hadoop-hive:1.0.0

@@ -4,7 +4,7 @@
 # FYI agent.py is in base image
 # TODO: Use puppet as modern approach
 
-source /functions.sh
+source /scripts/functions.sh
 
 AGENT_PORT=3333
 
@@ -185,3 +185,13 @@ wait_agent $agent_addr
 run_remote_script $agent_addr "/scripts/run_spark_thrift_server.sh"
 wait_for_it "$SPARK_THRIFT_ADDR:$SPARK_THRIFT_PORT"
 echo "Spark thrift server has been up!"
+
+# Run Hue
+HUE_ADDR="hue"
+HUE_PORT=8888
+echo "Running hue..."
+agent_addr="$HUE_ADDR:$AGENT_PORT"
+wait_agent $agent_addr
+run_remote_script $agent_addr "/scripts/run_hue.sh"
+wait_for_it "$HUE_ADDR:$HUE_PORT"
+echo "Hue has been up!"

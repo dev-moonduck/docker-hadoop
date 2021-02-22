@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /functions.sh
+source /scripts/functions.sh
 
 function handleUserOptions() {
     local hadoop_username_prefix="HADOOP_USER_NAME_"

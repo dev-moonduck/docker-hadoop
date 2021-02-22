@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # common functions
-source /functions.sh
+source /scripts/functions.sh
 
 # Set some sensible defaults
 export CORE_CONF_fs_defaultFS=${CORE_CONF_fs_defaultFS:-hdfs://`hostname -f`:8020}
@@ -67,6 +67,6 @@ for script in `ls $EXTRA_CONFIG_PATH/* 2> /dev/null`; do
     /bin/bash $script
 done
 
-python3 /agent.py /scripts 3333 &
+python3 /scripts/agent.py /scripts 3333 &
 
 tail -f /dev/null
