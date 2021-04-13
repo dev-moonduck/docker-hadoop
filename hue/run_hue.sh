@@ -1,3 +1,3 @@
 #!/bin/bash
 
-su --preserve-environment hue -c "/usr/share/hue/startup.sh"
+su --preserve-environment hue -c "cd /usr/share/hue && ./startup.sh"

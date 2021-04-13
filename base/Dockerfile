@@ -145,7 +145,7 @@ ARG HUE_USER_PASSWORD=hue
 ARG HUE_GROUP=$HADOOP_SVC_GROUP
 ENV HADOOP_USER_NAME_$HUE_USER=$HUE_USER
 ENV HADOOP_USER_OPT_$HUE_USER="proxy.user=true"
-RUN useradd --uid $HUE_UID --no-log-init --groups $HUE_GROUP --shell /usr/sbin/nologin --no-create-home --system -p $HUE_USER_PASSWORD $HUE_USER
+RUN useradd --uid $HUE_UID --no-log-init --groups $HUE_GROUP --shell /bin/bash --create-home -p $HUE_USER_PASSWORD $HUE_USER
 
 ARG AIRFLOW_USER=airflow
 ARG AIRFLOW_UID=370
