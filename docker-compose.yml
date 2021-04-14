@@ -207,43 +207,43 @@ services:
           - spark-adhoc
           - hue
   
-  datanode6:
-    image: docker-hadoop-hive:1.0.0
-    container_name: datanode6
-    hostname: datanode6
-    restart: always
-    volumes:
-      - ./datanode/run_datanode.sh:/scripts/run_datanode.sh
-      - ./datanode/run_nodemanager.sh:/scripts/run_nodemanager.sh
-      - ./hive/hive_config.sh:/config/hive_config.sh
-      - ./spark/spark-bin:/opt/spark
-    env_file:
-      - ./hadoop.env
-      - ./hive/hadoop-hive.env
-    ports:
-      - 9866:9864
-      - 8046:8042
-    networks:
-      hadoop.net:
+  # datanode6:
+  #   image: docker-hadoop-hive:1.0.0
+  #   container_name: datanode6
+  #   hostname: datanode6
+  #   restart: always
+  #   volumes:
+  #     - ./datanode/run_datanode.sh:/scripts/run_datanode.sh
+  #     - ./datanode/run_nodemanager.sh:/scripts/run_nodemanager.sh
+  #     - ./hive/hive_config.sh:/config/hive_config.sh
+  #     - ./spark/spark-bin:/opt/spark
+  #   env_file:
+  #     - ./hadoop.env
+  #     - ./hive/hadoop-hive.env
+  #   ports:
+  #     - 9866:9864
+  #     - 8046:8042
+  #   networks:
+  #     hadoop.net:
 
-  datanode7:
-    image: docker-hadoop-hive:1.0.0
-    container_name: datanode7
-    hostname: datanode7
-    restart: always
-    volumes:
-      - ./datanode/run_datanode.sh:/scripts/run_datanode.sh
-      - ./datanode/run_nodemanager.sh:/scripts/run_nodemanager.sh
-      - ./hive/hive_config.sh:/config/hive_config.sh
-      - ./spark/spark-bin:/opt/spark
-    env_file:
-      - ./hadoop.env
-      - ./hive/hadoop-hive.env
-    ports:
-      - 9867:9864
-      - 8047:8042
-    networks:
-      hadoop.net:
+  # datanode7:
+  #   image: docker-hadoop-hive:1.0.0
+  #   container_name: datanode7
+  #   hostname: datanode7
+  #   restart: always
+  #   volumes:
+  #     - ./datanode/run_datanode.sh:/scripts/run_datanode.sh
+  #     - ./datanode/run_nodemanager.sh:/scripts/run_nodemanager.sh
+  #     - ./hive/hive_config.sh:/config/hive_config.sh
+  #     - ./spark/spark-bin:/opt/spark
+  #   env_file:
+  #     - ./hadoop.env
+  #     - ./hive/hadoop-hive.env
+  #   ports:
+  #     - 9867:9864
+  #     - 8047:8042
+  #   networks:
+  #     hadoop.net:
 
   cluster-db:
     image: postgres:13.1
@@ -260,22 +260,6 @@ services:
     volumes:
       - ./hive/sql/create_db.sql:/docker-entrypoint-initdb.d/create_hive_db.sql
       - ./hue/sql/create_db.sql:/docker-entrypoint-initdb.d/create_hue_db.sql
-  
-  # hue:
-  #   image: docker-hadoop-hue:1.0.0
-  #   container_name: hue
-  #   hostname: hue
-  #   env_file:
-  #     - ./hive/hadoop-hive.env
-  #     - ./hadoop.env
-  #   environment:
-  #     SERVICE_PRECONDITION: "hive-server:10000"
-  #   networks:
-  #     - hadoop.net
-  #   volumes:
-  #     - ./spark/spark-bin:/opt/spark
-  #   ports:
-  #     - "8888:8888"
 
   # # trino:
   # #   image: docker-hadoop-trino:1.0.0

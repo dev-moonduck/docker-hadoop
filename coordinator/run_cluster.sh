@@ -101,7 +101,7 @@ echo "All namenode have been up!"
 DATANODE_PORT=9864
 NODEMANAGER_PORT=8042
 echo "Trying to run datanode/nodemanager..."
-DATA_NODES=("datanode1" "datanode2" "datanode3" "datanode4" "datanode5" "datanode6" "datanode7")
+DATA_NODES=("datanode1" "datanode2" "datanode3" "datanode4" "datanode5")
 for node in "${DATA_NODES[@]}"; do
     agent_addr="$node:$AGENT_PORT"
     wait_agent $agent_addr
