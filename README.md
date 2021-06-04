@@ -1,3 +1,6 @@
+# Deprecated project
+This project is not being maintained any more. But you can use [docker-hadoop-spawningpool](https://github.com/dev-moonduck/docker-hadoop-spawningpool) instead. You can customize docker hadoop cluster and run cluster on local via [docker-hadoop-spawningpool](https://github.com/dev-moonduck/docker-hadoop-spawningpool)
+
 # Docker hadoop cluster
 This is hadoop docker cluster for test purpose. 
 It's not Psuedo-Distributed, but normal distributed hadoop cluster. If you want to build Hadoop Apps, this cluster can be good to test your app.  
